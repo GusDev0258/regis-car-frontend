@@ -7,6 +7,8 @@ const App = () => {
   const [marcaCarro, setMarcaCarro] = useState("");
   const [anoCarro, setAnoCarro] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const imageRef = useRef<HTMLImageElement>(null);
+  const [imageList, setImageList] = useState([]);
 
   useEffect(() => {}, []);
 
@@ -24,7 +26,9 @@ const App = () => {
       }),
     });
     const response = await request.json();
-    handleCarImage();
+    const source = await handleCarImage();
+    const images = [...imageList, source];
+    setImageList(images);
     console.log(response);
   };
 
@@ -42,8 +46,10 @@ const App = () => {
   };
 
   const handleCarImage = async () => {
-    return await fetch(`http://localhost:3000/files/${fileId}`).then((res) => res.blob());
-  }
+    const request = await fetch(`http://localhost:3000/files/${fileId}`);
+    const response = await request.json();
+    return response;
+  };
 
   return (
     <main>
@@ -89,7 +95,12 @@ const App = () => {
         </button>
       </form>
       <section>
-        {}
+        <div className="image-container">
+          {imageList.length > 0 &&
+            imageList.map((image) => {
+              return <img src={image} alt="Carro" width={300} height={200} />;
+            })}
+        </div>
       </section>
     </main>
   );
